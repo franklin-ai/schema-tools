@@ -1,12 +1,13 @@
+use std::error::Error as StdError;
 use std::fs::File;
 use std::io::prelude::*;
 
-use clap::Clap;
+use clap::{Parser, ValueEnum};
 use env_logger::Builder as LoggerBuilder;
 use reqwest::blocking::Client;
 use serde_json::Value;
 
-pub mod chain;
+//pub mod chain;
 pub mod codegen;
 pub mod process;
 pub mod registry;
@@ -14,17 +15,21 @@ pub mod validate;
 
 use crate::{error::Error, schema::Schema};
 
-static OUTPUT: &[&str] = &["json", "yaml"];
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum OutputValues {
+    Json,
+    Yaml,
+}
+
 pub trait GetSchemaCommand {
     fn get_schema(&self, client: &Client) -> Result<Schema, Error>;
 }
 
-fn get_options<T>(
-    s: &str,
-) -> Result<(T, serde_json::Value), Box<dyn std::error::Error + Send + Sync + 'static>>
+/// Parse a single key-value pair
+fn get_options<T, U>(s: &str) -> Result<(T, serde_json::Value), Box<dyn StdError + Send + Sync + 'static>>
 where
     T: std::str::FromStr,
-    T::Err: std::error::Error + Send + Sync + 'static,
+    T::Err: StdError + Send + Sync + 'static,
 {
     if s.contains("=~") {
         let pos = s.find("=~").unwrap();
@@ -39,15 +44,15 @@ where
     }
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Clone, Debug)]
 pub struct Verbosity {
+    /// Verbosity level, increase by multipling v occurrences (warning, info, debug, trace)
     #[clap(
         long,
         short,
-        about = "Verbosity level, increase by multipling v occurences (warning, info, debug, trace)",
-        parse(from_occurrences)
+        action = clap::ArgAction::Count
     )]
-    verbose: i8,
+    verbose: u8,
 }
 
 impl Verbosity {
@@ -73,12 +78,13 @@ impl Verbosity {
     }
 }
 
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug, Clone)]
 pub(crate) struct Output {
-    #[clap(short, long, about = "Returned format", possible_values = OUTPUT, parse(try_from_str), default_value = "json")]
+    /// Returned format
+    #[arg(value_enum, short, long, default_value = "json")]
     output: String,
-
-    #[clap(long, about = "Path of output file, default output to stdout")]
+    /// Path of output file, default output to stdout
+    #[clap(long)]
     to_file: Option<String>,
 }
 
