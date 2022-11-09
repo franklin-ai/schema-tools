@@ -2,7 +2,7 @@ on:
   pull_request: {}
   push:
     branches:
-      - master
+      - rebuild
 
 name: build
 
@@ -16,29 +16,4 @@ jobs:
         with:
           toolchain: stable
       - run: cargo build --release
-
-  build_macos_arm:
-    name: Build for macos (arm)
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: aarch64-apple-darwin
-          default: true
-          override: true
-      - run: cargo build --release
-
-  build_macos:
-    name: Build for macos
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-apple-darwin
-          default: true
-          override: true
-      - run: cargo build --release
+      - run: cargo install --path .
