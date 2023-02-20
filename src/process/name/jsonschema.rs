@@ -97,7 +97,7 @@ pub fn name_schema(
             }
 
             // definitions
-            lazy_static! {
+            lazy_static::lazy_static! {
                 static ref NESTED_DEFINITIONS: [&'static str; 2] = ["definitions", "$defs"];
             }
 
@@ -116,7 +116,7 @@ pub fn name_schema(
             }
 
             // items
-            lazy_static! {
+            lazy_static::lazy_static! {
                 static ref NESTED_NAMES: [&'static str; 5] =
                     ["items", "oneOf", "allOf", "anyOf", "not"];
             }

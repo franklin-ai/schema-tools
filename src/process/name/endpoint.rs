@@ -14,7 +14,7 @@ pub struct Endpoint {
 
 impl Endpoint {
     pub fn new(method: String, original_path: String) -> Result<Endpoint, Error> {
-        lazy_static! {
+        lazy_static::lazy_static! {
             static ref METHOD: Regex =
                 Regex::new("^(get|head|post|put|delete|connect|options|trace|patch)$").unwrap();
             static ref VERSION: Regex = Regex::new("^v([0-9]+)$").unwrap();

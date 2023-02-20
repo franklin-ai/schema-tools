@@ -8,7 +8,7 @@ macro_rules! crtpl {
     };
 }
 
-lazy_static! {
+lazy_static::lazy_static! {
     // regexp source: https://gist.github.com/tbrianjones/ba0460cc1d55f357e00b
 
     static ref SINGULAR_LIST: [(Regex, &'static str); 28] = [
